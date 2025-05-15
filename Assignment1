@@ -1,0 +1,118 @@
+DB_FILE="students.txt"
+
+touch $DB_FILE
+
+add_student(){
+    echo "Enter Roll Number:"
+    read roll
+    echo "enter name:"
+    read name
+    echo "enter branch"
+    read branch
+
+    if grep -q "^$roll| $DB_FILE";then
+    echo "roll no already exists"
+    return
+    fi
+
+# grep: A command-line utility to search for patterns in files.
+
+# -q: "Quiet" mode. It suppresses output and only sets the exit status (0 if a match is found, 1 if not).
+
+# "^$roll|":
+
+# This is the pattern being searched for.
+
+# ^ anchors the match to the start of the line.
+
+# $roll is a shell variable, which is expected to contain the roll number.
+
+# | (a literal pipe symbol) probably separates the roll number from other data fields in students.txt.
+
+# So "^$roll|" matches lines that start with the roll number followed by a pipe.
+
+# $DB_FILE: This expands to the filename (e.g., students.txt) being searched.
+
+
+    echo "$roll|$name|$branch">>"$DB_FILE"
+    echo "student added successfully"
+# >> "$DB_FILE"
+# >>: This is the append redirection operator.
+
+# It adds the output to the end of the file without overwriting existing content.
+
+# $DB_FILE: The file where student records are stored (e.g., students.txt).
+}
+
+view_students(){
+    if [[! -s "$DB_FILE"]]; then  # "The file does not exist or is empty."
+    echo "No students found !"
+    return 
+    fi
+    echo -e "\n student Records:"
+    echo "....................."
+    column -t -s '|' "$DB_FILE" #This command formats the contents of the file (like students.txt) into a neatly aligned table, using | as the field separator.
+}
+
+search_student() 
+{
+    echo "enter roll no to search"
+read roll
+
+result=$(grep "^roll|" "$DB_FILE")
+
+if [[-z "$result"]];then  #Returns true if result is either unset or "" (an empty string).
+    echo "student not found"
+else
+    echo "student found"
+    echo "$result" | column -t -s '|'
+fi
+}
+
+
+delete_Student(){
+echo "enter roll no to delte"
+read roll 
+if grep -q "^$roll|" "$DB_FILE"; then
+grep -v "^$roll|" "$DB_FILE" > temp.txt && mv temp.txt "$DB_FILE"
+
+# This command removes a student's record from the database ($DB_FILE) based on their roll number, using a safe two-step process:
+
+# Filter everything except the record to remove.
+
+# Overwrite the original file with the filtered result.
+
+
+
+echo "student deleted successfully"
+else
+echo "student not found"
+fi
+
+}
+
+
+while true; do
+echo -e "\n=== Student DB Menu"
+echo "1.add"
+echo "2.view"
+echo "3.search"
+echo "4.delete"
+echo "5.exit"
+echo "enter your choice:"
+read choice
+
+case $choice in
+1) add_student;;
+2) view_students;;
+3) search_student;;
+4) delete_Student;;
+5) echo "exiting";exit;;
+*) echo "invalid";;
+esac
+
+done
+
+
+# gcc -o program2 execvp_example.c
+# ./program2
