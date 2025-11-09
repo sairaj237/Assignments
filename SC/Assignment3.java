@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Assignment3 {
 
@@ -17,12 +18,23 @@ public class Assignment3 {
 
     public static void main(String[] args) {
 
+        Scanner sc = new Scanner(System.in);
         Random rand = new Random();
 
-        int dim = 5;
-        int wolves = 20;
-        int maxIter = 100;
-        double lb = -10.0, ub = 10.0;
+        System.out.print("Enter number of dimensions: ");
+        int dim = sc.nextInt();
+
+        System.out.print("Enter number of wolves: ");
+        int wolves = sc.nextInt();
+
+        System.out.print("Enter max iterations: ");
+        int maxIter = sc.nextInt();
+
+        System.out.print("Enter lower bound: ");
+        double lb = sc.nextDouble();
+
+        System.out.print("Enter upper bound: ");
+        double ub = sc.nextDouble();
 
         // Initialize wolf positions
         ArrayList<ArrayList<Double>> positions = new ArrayList<>();
@@ -33,9 +45,8 @@ public class Assignment3 {
             positions.add(pos);
         }
 
-        // Alpha, Beta, Delta
         ArrayList<Double> Alpha = new ArrayList<>();
-        ArrayList<Double> Beta = new ArrayList<>();
+        ArrayList<Double> Beta  = new ArrayList<>();
         ArrayList<Double> Delta = new ArrayList<>();
 
         double AlphaScore = Double.POSITIVE_INFINITY;
@@ -51,16 +62,16 @@ public class Assignment3 {
 
                 // Rank wolves
                 if (fitness < AlphaScore) {
-                    DeltaScore = BetaScore; Delta = new ArrayList<>(Beta);
+                    DeltaScore = BetaScore;  Delta = new ArrayList<>(Beta);
                     BetaScore  = AlphaScore; Beta  = new ArrayList<>(Alpha);
-                    AlphaScore = fitness;    Alpha = new ArrayList<>(positions.get(i));
+                    AlphaScore = fitness;     Alpha = new ArrayList<>(positions.get(i));
                 }
                 else if (fitness < BetaScore) {
-                    DeltaScore = BetaScore; Delta = new ArrayList<>(Beta);
-                    BetaScore = fitness;    Beta  = new ArrayList<>(positions.get(i));
+                    DeltaScore = BetaScore;  Delta = new ArrayList<>(Beta);
+                    BetaScore  = fitness;    Beta = new ArrayList<>(positions.get(i));
                 }
                 else if (fitness < DeltaScore) {
-                    DeltaScore = fitness;   Delta = new ArrayList<>(positions.get(i));
+                    DeltaScore = fitness;    Delta = new ArrayList<>(positions.get(i));
                 }
             }
 
@@ -103,6 +114,8 @@ public class Assignment3 {
         System.out.print("\nBest solution found (Alpha wolf): ");
         for (double x : Alpha) System.out.print(x + " ");
 
-        System.out.println("\nBest objective value = " + AlphaScore);
+       
+ System.out.println("\nBest objective value = " + AlphaScore);
+        sc.close();
     }
 }

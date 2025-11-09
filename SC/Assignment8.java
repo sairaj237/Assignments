@@ -1,13 +1,13 @@
 import java.util.*;
 
 class GeneticAlgorithm {
-    private static final int POP_SIZE = 50;
-    private static final int GENERATIONS = 100;
-    private static final double MUTATION_RATE = 0.01;
-    private static final double CROSSOVER_RATE = 0.7;
-    private static final int CHROM_LENGTH = 20;
-    private static final double LOWER = -10;
-    private static final double UPPER = 10;
+    int POP_SIZE;
+    int GENERATIONS;
+    double MUTATION_RATE;
+    double CROSSOVER_RATE;
+    static final int CHROM_LENGTH = 20;
+    static final double LOWER = -10;
+    static final double UPPER = 10;
 
     Random rand = new Random();
 
@@ -24,8 +24,11 @@ class GeneticAlgorithm {
     ArrayList<Individual> population = new ArrayList<>();
     Individual best;
 
-    // ✅ Correct constructor
-    GeneticAlgorithm() {
+    GeneticAlgorithm(int pop, int gen, double mut, double cross) {
+        this.POP_SIZE = pop;
+        this.GENERATIONS = gen;
+        this.MUTATION_RATE = mut;
+        this.CROSSOVER_RATE = cross;
         initPopulation();
     }
 
@@ -83,7 +86,6 @@ class GeneticAlgorithm {
             c1.genes = p1.genes.clone();
             c2.genes = p2.genes.clone();
         }
-
         return new Individual[]{c1, c2};
     }
 
@@ -94,7 +96,7 @@ class GeneticAlgorithm {
     }
 
     void evolve() {
-        System.out.println("Running GA for f(x,y) = x^2 + y^2 ...");
+        System.out.println("\nRunning GA for f(x,y) = x^2 + y^2 ...\n");
 
         for (int g = 0; g < GENERATIONS; g++) {
             ArrayList<Individual> newPop = new ArrayList<>();
@@ -119,13 +121,13 @@ class GeneticAlgorithm {
             updateBest();
 
             if ((g+1) % 10 == 0)
-                System.out.println("Gen " + (g+1) + " Best = " + best.fitness);
+                System.out.println("Generation " + (g+1) + " Best = " + best.fitness);
         }
 
-        double bestX = decode(best.genes, 0, CHROM_LENGTH / 2);
-        double bestY = decode(best.genes, CHROM_LENGTH / 2, CHROM_LENGTH);
+        double bestX = decode(best.genes, 0, CHROM_LENGTH/2);
+        double bestY = decode(best.genes, CHROM_LENGTH/2, CHROM_LENGTH);
 
-        System.out.println("\nBest solution:");
+        System.out.println("\nFinal Best Solution:");
         System.out.println("x = " + bestX);
         System.out.println("y = " + bestY);
         System.out.println("f(x,y) = " + best.fitness);
@@ -134,7 +136,21 @@ class GeneticAlgorithm {
 
 public class Assignment8 {
     public static void main(String[] args) {
-        GeneticAlgorithm ga = new GeneticAlgorithm(); // ✅ fixed
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter population size: ");
+        int pop = sc.nextInt();
+
+        System.out.print("Enter number of generations: ");
+        int gen = sc.nextInt();
+
+        System.out.print("Enter mutation rate (0-1): ");
+        double mut = sc.nextDouble();
+
+        System.out.print("Enter crossover rate (0-1): ");
+        double cross = sc.nextDouble();
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(pop, gen, mut, cross);
         ga.evolve();
     }
 }

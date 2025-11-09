@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Scanner;
 
 public class Assignment1 {
 
@@ -40,8 +40,25 @@ public class Assignment1 {
 
     public static void main(String[] args) {
 
-        ArrayList<Double> A = new ArrayList<>(Arrays.asList(0.2, 0.7, 0.5, 1.0));
-        ArrayList<Double> B = new ArrayList<>(Arrays.asList(0.6, 0.3, 0.8, 0.4));
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of elements in fuzzy sets A and B: ");
+        int n = sc.nextInt();
+
+        ArrayList<Double> A = new ArrayList<>();
+        ArrayList<Double> B = new ArrayList<>();
+
+        // Input for A
+        System.out.println("Enter values of Set A:");
+        for (int i = 0; i < n; i++) {
+            A.add(sc.nextDouble());
+        }
+
+        // Input for B
+        System.out.println("Enter values of Set B:");
+        for (int i = 0; i < n; i++) {
+            B.add(sc.nextDouble());
+        }
 
         System.out.print("Set A: ");
         printSet(A);
@@ -61,5 +78,7 @@ public class Assignment1 {
 
         System.out.print("Complement (A'): ");
         printSet(complementA);
+
+        sc.close();
     }
 }

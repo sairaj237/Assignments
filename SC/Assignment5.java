@@ -2,7 +2,6 @@ import java.util.*;
 
 public class Assignment5 {
 
-    static final int NUM_CITIES = 5;
     static final int NUM_ANTS = 10;
     static final int MAX_ITER = 100;
     static final double ALPHA = 1.0;
@@ -10,20 +9,11 @@ public class Assignment5 {
     static final double RHO = 0.5;
     static final double Q = 100;
 
-    static double[][] distMat = {
-        {0, 2, 2, 5, 7},
-        {2, 0, 4, 8, 2},
-        {2, 4, 0, 1, 3},
-        {5, 8, 1, 0, 2},
-        {7, 2, 3, 2, 0}
-    };
+    static double[][] distMat;
+    static double[][] pheromone;
+    static int NUM_CITIES;
 
-    static double[][] pheromone = new double[NUM_CITIES][NUM_CITIES];
     static Random rand = new Random();
-
-    static double randDouble() {
-        return rand.nextDouble();
-    }
 
     static int selectNextCity(int current, boolean[] visited) {
         double[] prob = new double[NUM_CITIES];
@@ -38,8 +28,9 @@ public class Assignment5 {
             }
         }
 
-        double r = randDouble() * sum;
+        double r = rand.nextDouble() * sum;
         double cum = 0;
+
         for (int j = 0; j < NUM_CITIES; j++) {
             if (!visited[j]) {
                 cum += prob[j];
@@ -47,6 +38,7 @@ public class Assignment5 {
             }
         }
 
+        // fallback
         for (int j = 0; j < NUM_CITIES; j++)
             if (!visited[j]) return j;
 
@@ -54,7 +46,23 @@ public class Assignment5 {
     }
 
     public static void main(String[] args) {
-        // initialize pheromone
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of cities: ");
+        NUM_CITIES = sc.nextInt();
+
+        distMat = new double[NUM_CITIES][NUM_CITIES];
+        pheromone = new double[NUM_CITIES][NUM_CITIES];
+
+        System.out.println("Enter distance matrix (" + NUM_CITIES + "x" + NUM_CITIES + "):");
+        for (int i = 0; i < NUM_CITIES; i++) {
+            for (int j = 0; j < NUM_CITIES; j++) {
+                distMat[i][j] = sc.nextDouble();
+            }
+        }
+
+        // initialize pheromones
         for (int i = 0; i < NUM_CITIES; i++)
             for (int j = 0; j < NUM_CITIES; j++)
                 pheromone[i][j] = 1.0;
@@ -69,38 +77,39 @@ public class Assignment5 {
 
             for (int k = 0; k < NUM_ANTS; k++) {
                 boolean[] visited = new boolean[NUM_CITIES];
-                int start = rand.nextInt(NUM_CITIES);
                 List<Integer> tour = new ArrayList<>();
 
+                int start = rand.nextInt(NUM_CITIES);
                 visited[start] = true;
                 tour.add(start);
 
                 int current = start;
+
                 for (int step = 1; step < NUM_CITIES; step++) {
                     int next = selectNextCity(current, visited);
-                    tour.add(next);
                     visited[next] = true;
+                    tour.add(next);
                     antLengths[k] += distMat[current][next];
                     current = next;
                 }
 
-                antLengths[k] += distMat[current][start];
+                antLengths[k] += distMat[current][start]; // return to start
                 tour.add(start);
 
                 if (antLengths[k] < bestLength) {
                     bestLength = antLengths[k];
-                    bestTour = tour;
+                    bestTour = new ArrayList<>(tour);
                 }
 
                 antTours.add(tour);
             }
 
-            // Evaporation
+            // evaporation
             for (int i = 0; i < NUM_CITIES; i++)
                 for (int j = 0; j < NUM_CITIES; j++)
                     pheromone[i][j] *= (1 - RHO);
 
-            // Deposit pheromone
+            // deposit
             for (int k = 0; k < NUM_ANTS; k++) {
                 double contribution = Q / antLengths[k];
                 List<Integer> tour = antTours.get(k);
@@ -112,10 +121,12 @@ public class Assignment5 {
                     pheromone[to][from] += contribution;
                 }
             }
+
+            System.out.println("Iteration " + (iter + 1) + " - Best: " + bestLength);
         }
 
-        System.out.println("Best length: " + bestLength);
-        System.out.print("Best tour: ");
+        System.out.println("\nBest tour:");
         for (int c : bestTour) System.out.print(c + " ");
+        System.out.println("\nBest length: " + bestLength);
     }
 }

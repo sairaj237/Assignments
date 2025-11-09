@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Assignment4 {
 
-    static final int N = 5;
+    static int N;  // number of cities
     static final int NUM_ANTS = 10;
     static final int NUM_ITERATIONS = 100;
     static final double ALPHA = 1.0;
@@ -11,26 +12,18 @@ public class Assignment4 {
     static final double EVAPORATION = 0.5;
     static final double Q = 100;
 
-    static double[][] distances = {
-            {0, 2, 2, 5, 7},
-            {2, 0, 4, 8, 2},
-            {2, 4, 0, 1, 3},
-            {5, 8, 1, 0, 2},
-            {7, 2, 3, 2, 0}
-    };
-
-    static double[][] pheromones = new double[N][N];
+    static double[][] distances;
+    static double[][] pheromones;
 
     static Random rand = new Random();
 
-    // Initialize pheromones
     static void initializePheromones() {
+        pheromones = new double[N][N];
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
                 pheromones[i][j] = 1.0;
     }
 
-    // Choose next city based on probability
     static int chooseNextCity(int current, boolean[] visited) {
         double[] probabilities = new double[N];
         double sum = 0.0;
@@ -54,7 +47,6 @@ public class Assignment4 {
             }
         }
 
-        // fallback (rare)
         for (int i = 0; i < N; i++)
             if (!visited[i])
                 return i;
@@ -62,7 +54,6 @@ public class Assignment4 {
         return -1;
     }
 
-    // Run the ACO algorithm
     static void runACO() {
         initializePheromones();
 
@@ -91,10 +82,8 @@ public class Assignment4 {
                     current = next;
                 }
 
-                // return to start
                 tourLengths[k] += distances[current][tour.get(0)];
                 tour.add(tour.get(0));
-
                 allTours.add(tour);
 
                 if (tourLengths[k] < bestLength) {
@@ -103,12 +92,10 @@ public class Assignment4 {
                 }
             }
 
-            // evaporate pheromones
             for (int i = 0; i < N; i++)
                 for (int j = 0; j < N; j++)
                     pheromones[i][j] *= (1 - EVAPORATION);
 
-            // deposit new pheromones
             for (int k = 0; k < NUM_ANTS; k++) {
                 double contribution = Q / tourLengths[k];
                 ArrayList<Integer> tour = allTours.get(k);
@@ -131,6 +118,21 @@ public class Assignment4 {
     }
 
     public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of cities: ");
+        N = sc.nextInt();
+
+        distances = new double[N][N];
+
+        System.out.println("Enter distance matrix:");
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                distances[i][j] = sc.nextDouble();
+
+        sc.close();
+
         runACO();
     }
 }
